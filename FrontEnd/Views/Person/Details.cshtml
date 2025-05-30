@@ -1,0 +1,115 @@
+﻿@model FrontEnd.Models.PersonViewModel
+@{
+    ViewData["Title"] = "Detalles de la Persona";
+}
+
+<h1>Detalles de la Persona</h1>
+
+<div>
+    <h4>Información Personal</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.PersonID)
+        </dt>
+        <dd class="col-sm-9">
+            <strong>@Html.DisplayFor(model => model.PersonID)</strong>
+        </dd>
+
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.FirstName)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.FirstName)
+        </dd>
+
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.LastName)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.LastName)
+        </dd>
+
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Discriminator)
+        </dt>
+        <dd class="col-sm-9">
+            @if (Model.Discriminator == "Student")
+            {
+                <span class="badge badge-info badge-lg">
+                    <i class="fas fa-graduation-cap"></i> Estudiante
+                </span>
+            }
+            else if (Model.Discriminator == "Instructor")
+            {
+                <span class="badge badge-success badge-lg">
+                    <i class="fas fa-chalkboard-teacher"></i> Instructor
+                </span>
+            }
+            else
+            {
+                <span class="badge badge-secondary">@Html.DisplayFor(model => model.Discriminator)</span>
+            }
+        </dd>
+
+        @if (Model.HireDate.HasValue)
+        {
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.HireDate)
+            </dt>
+            <dd class="col-sm-9">
+                <i class="fas fa-calendar-alt text-muted"></i>
+                @Html.DisplayFor(model => model.HireDate)
+            </dd>
+        }
+
+        @if (Model.EnrollmentDate.HasValue)
+        {
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.EnrollmentDate)
+            </dt>
+            <dd class="col-sm-9">
+                <i class="fas fa-calendar-plus text-muted"></i>
+                @Html.DisplayFor(model => model.EnrollmentDate)
+            </dd>
+        }
+    </dl>
+</div>
+
+<div class="card mt-4">
+    <div class="card-body">
+        <h5 class="card-title">Resumen</h5>
+        <p class="card-text">
+            <strong>Nombre Completo:</strong> @Model.FirstName @Model.LastName<br>
+            <strong>Tipo:</strong>
+            @if (Model.Discriminator == "Student")
+            {
+                <text>Estudiante</text>
+                @if (Model.EnrollmentDate.HasValue)
+                {
+                    <text> - Inscrito el @Model.EnrollmentDate.Value.ToString("dd/MM/yyyy")</text>
+                }
+            }
+            else if (Model.Discriminator == "Instructor")
+            {
+                <text>Instructor</text>
+                @if (Model.HireDate.HasValue)
+                {
+                    <text> - Contratado el @Model.HireDate.Value.ToString("dd/MM/yyyy")</text>
+                }
+            }
+        </p>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model.PersonID" class="btn btn-warning">
+        <i class="fas fa-edit"></i> Editar
+    </a>
+    <a asp-action="Delete" asp-route-id="@Model.PersonID" class="btn btn-danger">
+        <i class="fas fa-trash"></i> Eliminar
+    </a>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fas fa-list"></i> Volver a la Lista
+    </a>
+</div>

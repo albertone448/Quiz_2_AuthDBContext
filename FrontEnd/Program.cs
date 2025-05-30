@@ -11,13 +11,13 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/Login/Login";
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Duración de la cookie
-        options.SlidingExpiration = true; // Renueva la cookie si el usuario está activo
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Duraciï¿½n de la cookie
+        options.SlidingExpiration = true; // Renueva la cookie si el usuario estï¿½ activo
     });
 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Duración de la sesión
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Duraciï¿½n de la sesiï¿½n
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true; // Necesario para GDPR
 });
@@ -25,7 +25,7 @@ builder.Services.AddSession(options =>
 #region DI
 builder.Services.AddHttpClient<IServiceHelper, ServiceHelper>();
 builder.Services.AddScoped<IServiceHelper, ServiceHelper>();
-builder.Services.AddScoped<IDepartmentHelper, DepartmentHelper>();
+builder.Services.AddScoped<IPersonHelper, PersonHelper>();
 builder.Services.AddScoped<ISecurityHelper, SecurityHelper>();
 builder.Services.AddScoped<IRegisterHelper, RegisterHelper>();
 #endregion

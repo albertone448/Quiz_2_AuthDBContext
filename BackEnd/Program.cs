@@ -30,9 +30,11 @@ builder.Services.AddDbContext<SchoolContext>(
                                         ));
 
 builder.Services.AddDbContext<AuthDBContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        b => b.MigrationsAssembly("BackEnd")
+                                options.UseSqlServer(
+                                builder
+                                .Configuration
+                                .GetConnectionString("DefaultConnection"),
+                                b => b.MigrationsAssembly("BackEnd")
     ));
 
 #endregion
@@ -97,8 +99,8 @@ builder.Services.AddAuthentication(options =>
 
 
 builder.Services.AddScoped<IUnidadDeTrabajo, UnidadDeTrabajo>();
-builder.Services.AddScoped<IDepartmentDAL, DepartmentDALImpl>();
-builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IPersonDAL, PersonDALImpl>();
+builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 #endregion

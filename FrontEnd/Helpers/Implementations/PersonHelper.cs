@@ -5,73 +5,75 @@ using Newtonsoft.Json;
 
 namespace FrontEnd.Helpers.Implementations
 {
-    public class DepartmentHelper : IDepartmentHelper
+    public class PersonHelper : IPersonHelper
     {
         private readonly IServiceHelper _helper;
 
         public string Token { get; set; }
 
-        public DepartmentHelper(IServiceHelper helper)
+        public PersonHelper(IServiceHelper helper)
         {
             _helper = helper;
         }
 
-        private DepartmentViewModel Convertir(DepartmentAPI department)
+        private PersonViewModel Convertir(PersonAPI person)
         {
-            return new DepartmentViewModel
+            return new PersonViewModel
             {
-                DepartmentId = department.DepartmentId,
-                Name = department.Name,
-                Budget = department.Budget,
-                StartDate = department.StartDate,
-                Administrator = department.Administrator
+                PersonID = person.PersonID,
+                LastName = person.LastName,
+                FirstName = person.FirstName,
+                HireDate = person.HireDate,
+                EnrollmentDate = person.EnrollmentDate,
+                Discriminator = person.Discriminator
             };
         }
 
-        private DepartmentAPI Convertir(DepartmentViewModel department)
+        private PersonAPI Convertir(PersonViewModel person)
         {
-            return new DepartmentAPI
+            return new PersonAPI
             {
-                DepartmentId = department.DepartmentId,
-                Name = department.Name,
-                Budget = department.Budget,
-                StartDate = department.StartDate,
-                Administrator = department.Administrator
+                PersonID = person.PersonID,
+                LastName = person.LastName,
+                FirstName = person.FirstName,
+                HireDate = person.HireDate,
+                EnrollmentDate = person.EnrollmentDate,
+                Discriminator = person.Discriminator
             };
         }
 
-        public void Add(DepartmentViewModel department)
+        public void Add(PersonViewModel person)
         {
             // Configurar token de autorización
             _helper.HttpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
 
-            var response = _helper.Post("api/department", Convertir(department));
+            var response = _helper.Post("api/person", Convertir(person));
 
             if (response != null)
             {
                 var content = response.Content.ReadAsStringAsync().Result;
 
-                var result = JsonConvert.DeserializeObject<DepartmentAPI>(content);
+                var result = JsonConvert.DeserializeObject<PersonAPI>(content);
 
                 if (result != null)
                     Convertir(result);
             }
         }
 
-        public void Update(DepartmentViewModel department)
+        public void Update(PersonViewModel person)
         {
             // Configurar token de autorización
             _helper.HttpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
 
-            var response = _helper.Put("api/department", Convertir(department));
+            var response = _helper.Put("api/person", Convertir(person));
 
             if (response != null)
             {
                 var content = response.Content.ReadAsStringAsync().Result;
 
-                var result = JsonConvert.DeserializeObject<DepartmentAPI>(content);
+                var result = JsonConvert.DeserializeObject<PersonAPI>(content);
 
                 if (result != null)
                     Convertir(result);
@@ -84,48 +86,48 @@ namespace FrontEnd.Helpers.Implementations
             _helper.HttpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
 
-            _helper.Delete("api/department/" + id);
+            _helper.Delete("api/person/" + id);
         }
 
-        public DepartmentViewModel Get(int id)
+        public PersonViewModel Get(int id)
         {
             // CORREGIDO: Configurar token de autorización antes de la petición
             _helper.HttpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
 
-            var response = _helper.GetResponseMessage("api/department/" + id);
-            var department = new DepartmentViewModel();
+            var response = _helper.GetResponseMessage("api/person/" + id);
+            var person = new PersonViewModel();
 
             if (response != null)
             {
                 var content = response.Content.ReadAsStringAsync().Result;
 
-                var result = JsonConvert.DeserializeObject<DepartmentAPI>(content);
+                var result = JsonConvert.DeserializeObject<PersonAPI>(content);
 
                 if (result != null)
-                    department = Convertir(result);
+                    person = Convertir(result);
             }
 
-            return department;
+            return person;
         }
 
-        public List<DepartmentViewModel> GetDepartments()
+        public List<PersonViewModel> GetPersons()
         {
             _helper.HttpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
 
-            var response = _helper.GetResponseMessage("api/department");
-            var lista = new List<DepartmentViewModel>();
+            var response = _helper.GetResponseMessage("api/person");
+            var lista = new List<PersonViewModel>();
 
             if (response != null)
             {
                 var content = response.Content.ReadAsStringAsync().Result;
 
-                var departments = JsonConvert.DeserializeObject<List<DepartmentAPI>>(content);
+                var persons = JsonConvert.DeserializeObject<List<PersonAPI>>(content);
 
-                if (departments != null)
+                if (persons != null)
                 {
-                    foreach (var item in departments)
+                    foreach (var item in persons)
                     {
                         lista.Add(Convertir(item));
                     }

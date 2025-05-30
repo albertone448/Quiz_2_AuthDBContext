@@ -10,13 +10,13 @@ namespace DAL.Implementations
 {
     public class UnidadDeTrabajo : IUnidadDeTrabajo
     {
-        public IDepartmentDAL DepartmentDAL { get; set; }
+        public IPersonDAL PersonDAL { get; set; }
 
         SchoolContext context;
 
-        public UnidadDeTrabajo(IDepartmentDAL departmentDAL, SchoolContext context)
+        public UnidadDeTrabajo(IPersonDAL personDAL, SchoolContext context)
         {
-            DepartmentDAL = departmentDAL;
+            PersonDAL = personDAL;
             this.context = context;
 
         }

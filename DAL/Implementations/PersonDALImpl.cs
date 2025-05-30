@@ -7,15 +7,14 @@ using Entities.Entities;
 
 namespace DAL.Implementations
 {
-    public class DepartmentDALImpl : GenericDALImpl<Department>, IDepartmentDAL
+    public class PersonDALImpl : GenericDALImpl<Person>, IPersonDAL
     {
         SchoolContext _context;
-        public DepartmentDALImpl(SchoolContext context)
+
+        public PersonDALImpl(SchoolContext context)
             : base(context)
         {
             _context = context;
         }
-
-
     }
 }

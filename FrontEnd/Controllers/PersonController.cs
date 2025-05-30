@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace FrontEnd.Controllers
 {
     [Authorize]
-    public class DepartmentController : Controller
+    public class PersonController : Controller
     {
-        private readonly IDepartmentHelper _departmentHelper;
+        private readonly IPersonHelper _personHelper;
 
-        public DepartmentController(IDepartmentHelper departmentHelper)
+        public PersonController(IPersonHelper personHelper)
         {
-            _departmentHelper = departmentHelper;
+            _personHelper = personHelper;
         }
 
         private string GetToken()
@@ -28,16 +28,17 @@ namespace FrontEnd.Controllers
             {
                 return false;
             }
-            _departmentHelper.Token = token;
+            _personHelper.Token = token;
             return true;
         }
 
-        private bool IsValidSqlDateTime(DateTime date)
+        private bool IsValidSqlDateTime(DateTime? date)
         {
-            return date >= new DateTime(1753, 1, 1) && date <= new DateTime(9999, 12, 31);
+            if (!date.HasValue) return true;
+            return date.Value >= new DateTime(1753, 1, 1) && date.Value <= new DateTime(9999, 12, 31);
         }
 
-        // GET: DepartmentController
+        // GET: PersonController
         public ActionResult Index()
         {
             if (!SetTokenAndValidate())
@@ -45,11 +46,11 @@ namespace FrontEnd.Controllers
                 return RedirectToAction("Login", "Login");
             }
 
-            var departments = _departmentHelper.GetDepartments();
-            return View(departments);
+            var persons = _personHelper.GetPersons();
+            return View(persons);
         }
 
-        // GET: DepartmentController/Details/5
+        // GET: PersonController/Details/5
         public ActionResult Details(int id)
         {
             if (!SetTokenAndValidate())
@@ -57,24 +58,21 @@ namespace FrontEnd.Controllers
                 return RedirectToAction("Login", "Login");
             }
 
-            var department = _departmentHelper.Get(id);
-            return View(department);
+            var person = _personHelper.Get(id);
+            return View(person);
         }
 
-        // GET: DepartmentController/Create
+        // GET: PersonController/Create
         public ActionResult Create()
         {
-            var model = new DepartmentViewModel
-            {
-                StartDate = DateTime.Today // Establecer la fecha actual
-            };
+            var model = new PersonViewModel();
             return View(model);
         }
 
-        // POST: DepartmentController/Create
+        // POST: PersonController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(DepartmentViewModel department)
+        public ActionResult Create(PersonViewModel person)
         {
             try
             {
@@ -83,30 +81,36 @@ namespace FrontEnd.Controllers
                     return RedirectToAction("Login", "Login");
                 }
 
-                // Validar fecha antes de guardar
-                if (!IsValidSqlDateTime(department.StartDate))
+                // Validar fechas antes de guardar
+                if (!IsValidSqlDateTime(person.HireDate))
                 {
-                    ModelState.AddModelError("StartDate", "La fecha debe estar entre 1/1/1753 y 12/31/9999");
-                    return View(department);
+                    ModelState.AddModelError("HireDate", "La fecha de contratación debe estar entre 1/1/1753 y 12/31/9999");
+                    return View(person);
+                }
+
+                if (!IsValidSqlDateTime(person.EnrollmentDate))
+                {
+                    ModelState.AddModelError("EnrollmentDate", "La fecha de inscripción debe estar entre 1/1/1753 y 12/31/9999");
+                    return View(person);
                 }
 
                 if (ModelState.IsValid)
                 {
-                    _departmentHelper.Add(department);
+                    _personHelper.Add(person);
                     return RedirectToAction(nameof(Index));
                 }
 
-                return View(department);
+                return View(person);
             }
             catch (Exception ex)
             {
                 // Log del error real para debugging
-                ModelState.AddModelError("", "Error al crear el departamento: " + ex.Message);
-                return View(department);
+                ModelState.AddModelError("", "Error al crear la persona: " + ex.Message);
+                return View(person);
             }
         }
 
-        // GET: DepartmentController/Edit/5
+        // GET: PersonController/Edit/5
         public ActionResult Edit(int id)
         {
             if (!SetTokenAndValidate())
@@ -114,14 +118,14 @@ namespace FrontEnd.Controllers
                 return RedirectToAction("Login", "Login");
             }
 
-            var department = _departmentHelper.Get(id);
-            return View(department);
+            var person = _personHelper.Get(id);
+            return View(person);
         }
 
-        // POST: DepartmentController/Edit/5
+        // POST: PersonController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(DepartmentViewModel department)
+        public ActionResult Edit(PersonViewModel person)
         {
             try
             {
@@ -130,29 +134,35 @@ namespace FrontEnd.Controllers
                     return RedirectToAction("Login", "Login");
                 }
 
-                // Validar fecha antes de actualizar
-                if (!IsValidSqlDateTime(department.StartDate))
+                // Validar fechas antes de actualizar
+                if (!IsValidSqlDateTime(person.HireDate))
                 {
-                    ModelState.AddModelError("StartDate", "La fecha debe estar entre 1/1/1753 y 12/31/9999");
-                    return View(department);
+                    ModelState.AddModelError("HireDate", "La fecha de contratación debe estar entre 1/1/1753 y 12/31/9999");
+                    return View(person);
+                }
+
+                if (!IsValidSqlDateTime(person.EnrollmentDate))
+                {
+                    ModelState.AddModelError("EnrollmentDate", "La fecha de inscripción debe estar entre 1/1/1753 y 12/31/9999");
+                    return View(person);
                 }
 
                 if (ModelState.IsValid)
                 {
-                    _departmentHelper.Update(department);
+                    _personHelper.Update(person);
                     return RedirectToAction(nameof(Index));
                 }
 
-                return View(department);
+                return View(person);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Error al actualizar el departamento: " + ex.Message);
-                return View(department);
+                ModelState.AddModelError("", "Error al actualizar la persona: " + ex.Message);
+                return View(person);
             }
         }
 
-        // GET: DepartmentController/Delete/5
+        // GET: PersonController/Delete/5
         public ActionResult Delete(int id)
         {
             if (!SetTokenAndValidate())
@@ -160,11 +170,11 @@ namespace FrontEnd.Controllers
                 return RedirectToAction("Login", "Login");
             }
 
-            var department = _departmentHelper.Get(id);
-            return View(department);
+            var person = _personHelper.Get(id);
+            return View(person);
         }
 
-        // POST: DepartmentController/Delete/5
+        // POST: PersonController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)
@@ -176,7 +186,7 @@ namespace FrontEnd.Controllers
                     return RedirectToAction("Login", "Login");
                 }
 
-                _departmentHelper.Delete(id);
+                _personHelper.Delete(id);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -186,9 +196,9 @@ namespace FrontEnd.Controllers
                     return RedirectToAction("Login", "Login");
                 }
 
-                var department = _departmentHelper.Get(id);
-                ModelState.AddModelError("", "Error al eliminar el departamento: " + ex.Message);
-                return View(department);
+                var person = _personHelper.Get(id);
+                ModelState.AddModelError("", "Error al eliminar la persona: " + ex.Message);
+                return View(person);
             }
         }
     }

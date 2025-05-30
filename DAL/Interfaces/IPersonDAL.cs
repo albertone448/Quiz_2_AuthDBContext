@@ -7,7 +7,7 @@ using Entities.Entities;
 
 namespace DAL.Interfaces
 {
-    public interface IDepartmentDAL : IGenericDAL<Department>
+    public interface IPersonDAL : IGenericDAL<Person>
     {
     }
 }

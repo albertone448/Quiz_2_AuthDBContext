@@ -145,11 +145,11 @@ public partial class SchoolContext : DbContext
 
         modelBuilder.Entity<Person>(entity =>
         {
-            entity.HasKey(e => e.PersonId).HasName("PK_School.Student");
+            entity.HasKey(e => e.PersonID).HasName("PK_School.Student");
 
             entity.ToTable("Person");
 
-            entity.Property(e => e.PersonId).HasColumnName("PersonID");
+            entity.Property(e => e.PersonID).HasColumnName("PersonID");
             entity.Property(e => e.Discriminator).HasMaxLength(50);
             entity.Property(e => e.EnrollmentDate).HasColumnType("datetime");
             entity.Property(e => e.FirstName).HasMaxLength(50);

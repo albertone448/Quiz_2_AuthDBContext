@@ -5,7 +5,7 @@ namespace Entities.Entities;
 
 public partial class Person
 {
-    public int PersonId { get; set; }
+    public int PersonID { get; set; }
 
     public string LastName { get; set; } = null!;
 
