@@ -9,6 +9,6 @@ namespace FrontEnd.Helpers.Interfaces
         List<PersonViewModel> GetPersons();
         void Add(PersonViewModel person);
         void Update(PersonViewModel person);
-        void Delete(int id);
+        bool Delete(int id);
     }
 }

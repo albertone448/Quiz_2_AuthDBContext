@@ -80,13 +80,43 @@ namespace FrontEnd.Helpers.Implementations
             }
         }
 
-        public void Delete(int id)
+        public bool Delete(int id)
         {
-            // Configurar token de autorización
-            _helper.HttpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            try
+            {
+                // Configurar token de autorización
+                _helper.HttpClient.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
 
-            _helper.Delete("api/person/" + id);
+                var response = _helper.Delete("api/person/" + id);
+
+                if (response != null && response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else if (response != null && response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    // Leer el mensaje de error del servidor
+                    var content = response.Content.ReadAsStringAsync().Result;
+                    var errorResponse = JsonConvert.DeserializeObject<dynamic>(content);
+                    string errorMessage = errorResponse?.message ?? "Error al eliminar la persona";
+
+                    throw new InvalidOperationException(errorMessage);
+                }
+                else
+                {
+                    throw new InvalidOperationException("Error al comunicarse con el servidor para eliminar la persona");
+                }
+            }
+            catch (InvalidOperationException)
+            {
+                // Re-lanzar excepciones de negocio
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Error inesperado al eliminar la persona: " + ex.Message, ex);
+            }
         }
 
         public PersonViewModel Get(int id)

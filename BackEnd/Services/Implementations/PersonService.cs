@@ -62,9 +62,32 @@ namespace BackEnd.Services.Implementations
 
         public void DeletePerson(int id)
         {
-            var person = new Person { PersonID = id };
-            _unidadDeTrabajo.PersonDAL.Remove(person);
-            _unidadDeTrabajo.Complete();
+            try
+            {
+                _logger.LogInformation($"Intentando eliminar persona con ID: {id}");
+                var person = new Person { PersonID = id };
+                _unidadDeTrabajo.PersonDAL.Remove(person);
+                _unidadDeTrabajo.Complete();
+                _logger.LogInformation($"Persona con ID: {id} eliminada exitosamente");
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
+            {
+                _logger.LogError(ex, $"Error al eliminar persona con ID: {id} - Restricción de base de datos");
+
+                // Verificar si es un error de restricción de clave foránea
+                if (ex.InnerException?.Message.Contains("REFERENCE constraint") == true ||
+                    ex.InnerException?.Message.Contains("FK_") == true)
+                {
+                    throw new InvalidOperationException("No se puede eliminar esta persona porque tiene registros relacionados en el sistema (calificaciones, cursos, etc.). Primero debe eliminar o reasignar todos los registros dependientes.", ex);
+                }
+
+                throw new InvalidOperationException("Error al eliminar la persona. Por favor, contacte al administrador del sistema.", ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error inesperado al eliminar persona con ID: {id}");
+                throw new InvalidOperationException("Error inesperado al eliminar la persona. Por favor, contacte al administrador del sistema.", ex);
+            }
         }
 
         public IEnumerable<PersonDTO> GetPersons()

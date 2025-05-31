@@ -53,9 +53,23 @@ namespace BackEnd.Controllers
 
         // DELETE: api/Person/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
-            _personService.DeletePerson(id);
+            try
+            {
+                _personService.DeletePerson(id);
+                return NoContent(); // 204 - Eliminación exitosa
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Error de restricción de clave foránea o error controlado
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                // Error inesperado
+                return StatusCode(500, new { message = "Error interno del servidor al eliminar la persona." });
+            }
         }
     }
 }

@@ -186,19 +186,30 @@ namespace FrontEnd.Controllers
                     return RedirectToAction("Login", "Login");
                 }
 
-                _personHelper.Delete(id);
+                var success = _personHelper.Delete(id);
+
+                if (success)
+                {
+                    TempData["SuccessMessage"] = "La persona ha sido eliminada exitosamente.";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "No se pudo eliminar la persona.";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Error de restricción de clave foránea o error controlado
+                TempData["ErrorMessage"] = ex.Message;
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                if (!SetTokenAndValidate())
-                {
-                    return RedirectToAction("Login", "Login");
-                }
-
-                var person = _personHelper.Get(id);
-                ModelState.AddModelError("", "Error al eliminar la persona: " + ex.Message);
-                return View(person);
+                // Error inesperado
+                TempData["ErrorMessage"] = "Error inesperado al eliminar la persona: " + ex.Message;
+                return RedirectToAction(nameof(Index));
             }
         }
     }
